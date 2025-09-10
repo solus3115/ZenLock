@@ -4,276 +4,168 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZenLock</title>
+
+  <!-- Fuente e iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js para estadísticas -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <style>
-    /* ===== Estilos base ===== */
     body {
       margin: 0;
-      font-family: 'Arial', sans-serif;
-      background-color: #fdfaf6;
+      font-family: 'Roboto', sans-serif;
+      background: #fdfdfd;
       color: #333;
       transition: background 0.3s, color 0.3s;
     }
-
-    h1, h2, h3 {
-      font-weight: 600;
-      margin: 0.5em 0;
-    }
-
-    button {
-      background: #3b82f6;
+    header, .tab-bar {
+      background: #4CAF50;
       color: white;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-      transition: background 0.3s;
-    }
-    button:hover { background: #2563eb; }
-
-    .container {
-      padding: 20px;
       text-align: center;
+      padding: 1rem;
     }
-
-    /* ===== Pantalla de Bienvenida ===== */
-    #welcomeScreen {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      background: linear-gradient(180deg, #fef9f5, #f3e9dc);
-    }
-    #welcomeScreen img {
-      width: 180px;
-      height: auto;
-      margin-bottom: 20px;
-    }
-
-    /* ===== Configuración inicial ===== */
-    #configScreen {
-      display: none;
-      min-height: 100vh;
-      background: #fafafa;
-    }
-    .config-option {
-      margin: 15px 0;
-      text-align: left;
-    }
-    label { font-weight: bold; display: block; margin-bottom: 5px; }
-
-    select, input[type="text"] {
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
       width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      display: flex;
+      justify-content: space-around;
+      border-top: 2px solid #ddd;
     }
-
-    /* ===== Modo oscuro ===== */
-    body.dark {
-      background-color: #1f2937;
-      color: #e5e7eb;
+    .tab-bar button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.2rem;
+      padding: 0.5rem;
+      cursor: pointer;
     }
-    body.dark button {
-      background: #10b981;
+    .tab-bar button.active {
+      border-top: 3px solid yellow;
     }
-    body.dark button:hover {
-      background: #059669;
+    .tab-content {
+      display: none;
+      padding: 2rem 1rem 5rem;
     }
-    body.dark #welcomeScreen {
-      background: linear-gradient(180deg, #111827, #1f2937);
+    .tab-content.active {
+      display: block;
     }
-    body.dark #configScreen {
-      background: #111827;
+    .dark-mode {
+      background: #121212;
+      color: #eee;
+    }
+    .dark-mode header, .dark-mode .tab-bar {
+      background: #222;
+    }
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1rem 0;
+      padding: 0.5rem 1rem;
+      background: #f0f0f0;
+      border-radius: 8px;
+    }
+    .dark-mode .toggle-container {
+      background: #333;
     }
   </style>
 </head>
 <body>
-  <!-- ===== Pantalla de Bienvenida ===== -->
-  <div id="welcomeScreen">
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAMAAACahl6sAAAAMFBMVEXMzMyWlpavr6+3t7fFxcWxsbG+vr7R0dHFxcW7u7vNzc3f39/MzMzY2Njp6en////HyI1lAAABQElEQVR4nO3aS46DMAwFUMlZ/f9nm0JglVApukTjWN9kugEOTvPTh3vjIgiAIgiAIgiAIgqA98xl+HnO1Fjo3Vdb7ZjrmPt3g7i4Ws28TYk+Tk5OLpXK5vdpddx65tiHVh9AewTQmTd5XcQq1HXwrpCLeExSwi5F7g6qgOULLOsJaZBfVdpEegZzPnxFzXUcXq8u9U7V2EsmdcGVZClXdKoN6lZLtWUIW0T6wVqle5o7xZtJG4oXxohdE4ON19LVe+6OHD6PZpw7bptf3Kl/1PSZvjMdP3vVnWThcY9vVhblYOxJtMPVfOJ/B+FZhFWj7l6EX8bhmYM5rEpcQqFvPBGBY7/po8aBIMQRAEQRAEQRAEQZCYfgCG0j/dAoc9YQAAAABJRU5ErkJggg==" alt="ZenLock Logo">
-    <h1>Bienvenido a ZenLock</h1>
-    <p>Tu guardián zen para un uso saludable del celular 🐶✨</p>
-    <button onclick="goToConfig()">Comenzar</button>
-  </div>
 
-  <!-- ===== Pantalla de Configuración ===== -->
-  <div id="configScreen" class="container">
-    <h2>Configuración Inicial</h2>
-    <div class="config-option">
-      <label for="limit">⏱ Tiempo máximo de uso (minutos):</label>
-      <input type="number" id="limit" min="10" max="600" value="60">
-    </div>
-    <div class="config-option">
-      <label for="tone">🔔 Tono de notificación:</label>
-      <select id="tone">
-        <option value="tono1.mp3">Tono 1</option>
-        <option value="tono2.mp3">Tono 2</option>
-        <option value="otro">Otro...</option>
-      </select>
-      <input type="text" id="customTone" placeholder="URL de tu tono" style="display:none;">
-    </div>
-    <button onclick="saveConfig()">Guardar y continuar con Zen</button>
-  </div>
+  <!-- Bienvenida -->
+  <header>
+    <h1>🐶 ZenLock</h1>
+    <p>Bienvenido a tu espacio de concentración</p>
+  </header>
+
+  <!-- Contenidos -->
+  <main>
+    <!-- Inicio -->
+    <section id="inicio" class="tab-content active">
+      <h2>Inicio</h2>
+      <p>🌿 Aquí comienza tu viaje Zen.</p>
+    </section>
+
+    <!-- Progreso -->
+    <section id="progreso" class="tab-content">
+      <h2>📊 Progreso</h2>
+      <canvas id="usageChart"></canvas>
+      <p>Sesiones Zen completadas: <span id="sessionCount">0</span></p>
+    </section>
+
+    <!-- ZenTime -->
+    <section id="zentime" class="tab-content">
+      <h2>🧘 ZenTime</h2>
+      <button onclick="startZenTime()">Iniciar sesión Zen</button>
+      <p>Relájate, respira y desconéctate 🌸</p>
+    </section>
+
+    <!-- Retos -->
+    <section id="retos" class="tab-content">
+      <h2>🎯 Retos</h2>
+      <p>Hoy: No usar redes sociales por 1 hora 🚫📱</p>
+    </section>
+
+    <!-- Perfil -->
+    <section id="perfil" class="tab-content">
+      <h2>👤 Perfil</h2>
+      <div class="toggle-container">
+        <span>Modo oscuro</span>
+        <label>
+          <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
+          <span>On/Off</span>
+        </label>
+      </div>
+    </section>
+  </main>
+
+  <!-- Barra inferior -->
+  <nav class="tab-bar">
+    <button onclick="openTab('inicio')" class="active"><i class="fa fa-home"></i></button>
+    <button onclick="openTab('progreso')"><i class="fa fa-chart-bar"></i></button>
+    <button onclick="openTab('zentime')"><i class="fa fa-spa"></i></button>
+    <button onclick="openTab('retos')"><i class="fa fa-bullseye"></i></button>
+    <button onclick="openTab('perfil')"><i class="fa fa-user"></i></button>
+  </nav>
 
   <script>
-    // Cambiar de bienvenida a configuración
-    function goToConfig() {
-      document.getElementById('welcomeScreen').style.display = 'none';
-      document.getElementById('configScreen').style.display = 'block';
-    }
-
-    // Guardar configuración
-    function saveConfig() {
-      const limit = document.getElementById('limit').value;
-      const tone = document.getElementById('tone').value;
-      const customTone = document.getElementById('customTone').value;
-
-      const toneFinal = (tone === "otro" && customTone) ? customTone : tone;
-
-      localStorage.setItem("zenlock_limit", limit);
-      localStorage.setItem("zenlock_tone", toneFinal);
-
-      alert("✅ Configuración guardada. Listo para comenzar con Zen!");
-      // Aquí luego mandamos al home (Parte 2)
-    }
-
-    // Mostrar campo de tono personalizado
-    document.getElementById("tone").addEventListener("change", function() {
-      if (this.value === "otro") {
-        document.getElementById("customTone").style.display = "block";
-      } else {
-        document.getElementById("customTone").style.display = "none";
-      }
-    });
-  </script>
-  <!-- ===== Pantalla Principal y Navegación ===== -->
-  <div id="mainApp" style="display:none;">
-    <!-- Contenido dinámico -->
-    <div id="tabContent" class="container"></div>
-
-    <!-- Barra inferior -->
-    <div id="bottomNav" style="
-      position: fixed; bottom: 0; left: 0; right: 0;
-      display: flex; justify-content: space-around;
-      background: #fff; border-top: 1px solid #ddd; padding: 10px 0;">
-      <button onclick="showTab('home')">🏠 Inicio</button>
-      <button onclick="showTab('progress')">📊 Progreso</button>
-      <button onclick="showTab('zen')">🧘 ZenTime</button>
-      <button onclick="showTab('challenges')">🎯 Retos</button>
-      <button onclick="showTab('profile')">👤 Perfil</button>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    // Ir al Home después de guardar config
-    function saveConfig() {
-      const limit = document.getElementById('limit').value;
-      const tone = document.getElementById('tone').value;
-      const customTone = document.getElementById('customTone').value;
-      const toneFinal = (tone === "otro" && customTone) ? customTone : tone;
-
-      localStorage.setItem("zenlock_limit", limit);
-      localStorage.setItem("zenlock_tone", toneFinal);
-
-      document.getElementById('configScreen').style.display = 'none';
-      document.getElementById('mainApp').style.display = 'block';
-      showTab('home');
-    }
-
-    // Tabs
-    function showTab(tab) {
-      const content = document.getElementById("tabContent");
-      if (tab === "home") {
-        content.innerHTML = `
-          <h2>🐶 ZenLock</h2>
-          <p>Bienvenido a tu espacio de calma digital ✨</p>
-        `;
-      }
-      if (tab === "progress") {
-        content.innerHTML = `
-          <h2>📊 Tu Progreso</h2>
-          <canvas id="progressChart"></canvas>
-          <p>Sesiones Zen completadas: <span id="zenSessions">0</span></p>
-        `;
-        renderChart();
-        document.getElementById("zenSessions").textContent = localStorage.getItem("zenlock_sessions") || 0;
-      }
-      if (tab === "zen") {
-        content.innerHTML = `
-          <h2>🧘 ZenTime</h2>
-          <p>Activa tu modo zen y desconéctate de distracciones.</p>
-          <button onclick="startZen()">Iniciar sesión Zen</button>
-          <p id="zenStatus"></p>
-        `;
-      }
-      if (tab === "challenges") {
-        content.innerHTML = `
-          <h2>🎯 Retos</h2>
-          <button onclick="completeChallenge()">Cumplir reto</button>
-          <p id="challengeResult"></p>
-        `;
-      }
-      if (tab === "profile") {
-        const darkMode = localStorage.getItem("zenlock_dark") === "true";
-        content.innerHTML = `
-          <h2>👤 Perfil</h2>
-          <p><strong>Límite diario:</strong> ${localStorage.getItem("zenlock_limit")} minutos</p>
-          <p><strong>Tono:</strong> ${localStorage.getItem("zenlock_tone")}</p>
-          <label>🌙 Modo oscuro:
-            <input type="checkbox" id="darkToggle" ${darkMode ? "checked" : ""}>
-          </label>
-        `;
-        document.getElementById("darkToggle").addEventListener("change", toggleDark);
-      }
-    }
-
-    // Chart.js
-    function renderChart() {
-      const ctx = document.getElementById("progressChart");
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"],
-          datasets: [{
-            label: "Uso diario (min)",
-            data: [30, 45, 50, 40, 60, 35, 20],
-            backgroundColor: "#3b82f6"
-          }]
-        }
-      });
-    }
-
-    // ZenTime
-    function startZen() {
-      let sessions = parseInt(localStorage.getItem("zenlock_sessions") || "0");
-      sessions++;
-      localStorage.setItem("zenlock_sessions", sessions);
-      document.getElementById("zenStatus").textContent = `Sesión activa 🧘 Total sesiones: ${sessions}`;
-    }
-
-    // Retos
-    const stickers = ["🏅", "🎉", "⭐", "🐶", "🌸"];
-    function completeChallenge() {
-      const reward = stickers[Math.floor(Math.random() * stickers.length)];
-      document.getElementById("challengeResult").textContent = `¡Reto cumplido! Ganaste ${reward}`;
+    // Cambio de pestañas
+    function openTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.tab-bar button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.currentTarget.classList.add('active');
     }
 
     // Modo oscuro
-    function toggleDark() {
-      const isDark = document.getElementById("darkToggle").checked;
-      localStorage.setItem("zenlock_dark", isDark);
-      document.body.classList.toggle("dark", isDark);
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark-mode');
     }
 
-    // Aplicar modo oscuro guardado
-    window.onload = () => {
-      if (localStorage.getItem("zenlock_dark") === "true") {
-        document.body.classList.add("dark");
+    // ZenTime contador
+    let sessions = 0;
+    function startZenTime() {
+      sessions++;
+      document.getElementById("sessionCount").textContent = sessions;
+      alert("🐶 Sesión Zen iniciada. Respira profundo.");
+    }
+
+    // Gráfico de ejemplo
+    const ctx = document.getElementById('usageChart');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],
+        datasets: [{
+          label: 'Uso (min)',
+          data: [30, 45, 60, 50, 40, 35, 20],
+          backgroundColor: '#4CAF50'
+        }]
       }
-    };
+    });
   </script>
 </body>
 </html>
