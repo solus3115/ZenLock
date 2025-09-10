@@ -4,190 +4,309 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZenLock</title>
-
-  <!-- Fuente e iconos -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;500;700&display=swap" rel="stylesheet">
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
     body {
       margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background: #fdfdfd;
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
       color: #333;
-      transition: background 0.3s, color 0.3s;
     }
-    header, .tab-bar {
+    .hidden {
+      display: none;
+    }
+    .center {
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .btn {
+      padding: 12px 20px;
       background: #4CAF50;
       color: white;
-      text-align: center;
-      padding: 1rem;
-    }
-    .tab-bar {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      border-top: 2px solid #ddd;
-    }
-    .tab-bar button {
-      background: none;
       border: none;
-      color: white;
-      font-size: 1.2rem;
-      padding: 0.5rem;
+      border-radius: 6px;
       cursor: pointer;
     }
-    .tab-bar button.active {
-      border-top: 3px solid yellow;
-    }
-    .tab-content {
-      display: none;
-      padding: 2rem 1rem 5rem;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .dark-mode {
-      background: #121212;
-      color: #eee;
-    }
-    .dark-mode header, .dark-mode .tab-bar {
-      background: #222;
-    }
-    .toggle-container {
+    .tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 1rem 0;
-      padding: 0.5rem 1rem;
-      background: #f0f0f0;
-      border-radius: 8px;
+      background: #ffffff;
+      border-top: 1px solid #ddd;
     }
-    .dark-mode .toggle-container {
-      background: #333;
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 10px 0;
+      cursor: pointer;
+    }
+    .tab.active {
+      background: #e0f7e9;
+      font-weight: bold;
+    }
+    .screen {
+      padding: 20px;
+      min-height: 80vh;
     }
   </style>
 </head>
 <body>
 
-  <!-- Bienvenida -->
-  <header>
-    <h1>🐶 ZenLock</h1>
-    <p>Bienvenido a tu espacio de concentración</p>
-  </header>
+  <!-- Pantalla de bienvenida -->
+  <div id="welcome" class="center">
+    <h1>🐶 Bienvenido a ZenLock</h1>
+    <p>Tu compañero para un uso equilibrado del celular</p>
+    <button class="btn" onclick="goToConfig()">Continuar</button>
+  </div>
 
-  <!-- Contenido -->
-  <main>
-    <!-- Inicio -->
-    <section id="inicio" class="tab-content active">
-      <h2>Inicio</h2>
-      <p>🌿 Aquí comienza tu viaje Zen.</p>
-    </section>
+  <!-- Pantalla de configuración -->
+  <div id="config" class="hidden screen">
+    <h2>⚙️ Configuración inicial</h2>
+    <label>Límite diario (minutos): <input type="number" id="limit" min="10" max="600"></label><br><br>
+    <label>Tono de notificación:
+      <select>
+        <option>Predeterminado</option>
+        <option>Suave</option>
+        <option>Silencio</option>
+      </select>
+    </label><br><br>
+    <label>
+      Modo oscuro:
+      <input type="checkbox" id="darkmode">
+    </label><br><br>
+    <button class="btn" onclick="goToApp()">Guardar y continuar con Zen</button>
+  </div>
 
-    <!-- Progreso -->
-    <section id="progreso" class="tab-content">
+  <!-- Pantalla principal -->
+  <div id="app" class="hidden">
+    <div id="home" class="screen">
+      <h2>🏠 Inicio</h2>
+      <p>Bienvenido a tu espacio Zen.</p>
+    </div>
+    <div id="progress" class="hidden screen">
       <h2>📊 Progreso</h2>
-      <canvas id="usageChart"></canvas>
-      <p>Sesiones Zen completadas: <span id="sessionCount">0</span></p>
-    </section>
-
-    <!-- ZenTime -->
-    <section id="zentime" class="tab-content">
+      <p>Estadísticas diarias y semanales aparecerán aquí.</p>
+    </div>
+    <div id="zentime" class="hidden screen">
       <h2>🧘 ZenTime</h2>
-      <button onclick="startZenTime()">Iniciar sesión Zen</button>
-      <p>Relájate, respira y desconéctate 🌸</p>
-    </section>
-
-    <!-- Retos -->
-    <section id="retos" class="tab-content">
+      <p>Activa el modo Zen y relájate.</p>
+    </div>
+    <div id="challenges" class="hidden screen">
       <h2>🎯 Retos</h2>
-      <p>Hoy: No usar redes sociales por 1 hora 🚫📱</p>
-    </section>
-
-    <!-- Perfil -->
-    <section id="perfil" class="tab-content">
+      <p>Completa pequeños desafíos para mejorar tu hábito digital.</p>
+    </div>
+    <div id="profile" class="hidden screen">
       <h2>👤 Perfil</h2>
-      <div class="toggle-container">
-        <span>Modo oscuro</span>
-        <label>
-          <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
-          <span>On/Off</span>
-        </label>
-      </div>
-      <div class="toggle-container">
-        <span>Sonidos de pestañas</span>
-        <label>
-          <input type="checkbox" id="soundToggle" checked>
-          <span>On/Off</span>
-        </label>
-      </div>
-    </section>
-  </main>
+      <p>Configura tus límites, preferencias y logros aquí.</p>
+    </div>
 
-  <!-- Barra inferior -->
-  <nav class="tab-bar">
-    <button onclick="openTab('inicio')" class="active"><i class="fa fa-home"></i></button>
-    <button onclick="openTab('progreso')"><i class="fa fa-chart-bar"></i></button>
-    <button onclick="openTab('zentime')"><i class="fa fa-spa"></i></button>
-    <button onclick="openTab('retos')"><i class="fa fa-bullseye"></i></button>
-    <button onclick="openTab('perfil')"><i class="fa fa-user"></i></button>
-  </nav>
-
-  <!-- Sonidos -->
-  <audio id="sound-inicio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
-  <audio id="sound-progreso" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"></audio>
-  <audio id="sound-zentime" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"></audio>
-  <audio id="sound-retos" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"></audio>
-  <audio id="sound-perfil" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"></audio>
+    <!-- Barra de navegación inferior -->
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('home', this)">Inicio</div>
+      <div class="tab" onclick="showTab('progress', this)">Progreso</div>
+      <div class="tab" onclick="showTab('zentime', this)">ZenTime</div>
+      <div class="tab" onclick="showTab('challenges', this)">Retos</div>
+      <div class="tab" onclick="showTab('profile', this)">Perfil</div>
+    </div>
+  </div>
 
   <script>
-    let sessions = 0;
-
-    // Cambio de pestañas con sonido
-    function openTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.tab-bar button').forEach(btn => btn.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      event.currentTarget.classList.add('active');
-
-      // Reproducir sonido si está activado
-      if (document.getElementById("soundToggle").checked) {
-        let sound = document.getElementById("sound-" + tabId);
-        if (sound) {
-          sound.currentTime = 0;
-          sound.play();
-        }
-      }
+    function goToConfig() {
+      document.getElementById('welcome').classList.add('hidden');
+      document.getElementById('config').classList.remove('hidden');
     }
 
-    // Modo oscuro
-    function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
+    function goToApp() {
+      document.getElementById('config').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
     }
 
-    // ZenTime contador
-    function startZenTime() {
-      sessions++;
-      document.getElementById("sessionCount").textContent = sessions;
-      alert("🐶 Sesión Zen iniciada. Respira profundo.");
+    function showTab(tabId, element) {
+      document.querySelectorAll('.screen').forEach(div => div.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      element.classList.add('active');
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenLock</title>
+  <style>
+    :root {
+      --bg: #f5f5f5;
+      --text: #333;
+      --accent: #4CAF50;
+      --card: #ffffff;
+    }
+    body.dark {
+      --bg: #121212;
+      --text: #f0f0f0;
+      --accent: #81C784;
+      --card: #1E1E1E;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+    .hidden { display: none; }
+    .center { text-align: center; padding: 60px 20px; }
+    h1, h2 { margin-bottom: 20px; }
+    .btn {
+      padding: 12px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: transform 0.2s;
+    }
+    .btn:hover { transform: scale(1.05); }
+    .screen {
+      padding: 20px;
+      min-height: 80vh;
+      background: var(--bg);
+      transition: background 0.3s;
+    }
+    .tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      background: var(--card);
+      border-top: 1px solid #ccc;
+      transition: background 0.3s;
+    }
+    .tab {
+      flex: 1;
+      text-align: center;
+      padding: 12px 0;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+    .tab.active {
+      background: var(--accent);
+      color: white;
+      border-radius: 6px 6px 0 0;
+    }
+    label {
+      display: block;
+      margin: 12px 0;
+    }
+    input, select {
+      padding: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-left: 8px;
+    }
+    /* Animación de transición entre pantallas */
+    .fade {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla de bienvenida -->
+  <div id="welcome" class="center fade">
+    <h1>🐶 Bienvenido a ZenLock</h1>
+    <p>Tu compañero para un uso equilibrado del celular</p>
+    <button class="btn" onclick="goToConfig()">Continuar</button>
+  </div>
+
+  <!-- Pantalla de configuración -->
+  <div id="config" class="hidden screen fade">
+    <h2>⚙️ Configuración inicial</h2>
+    <label>Límite diario (minutos): 
+      <input type="number" id="limit" min="10" max="600">
+    </label>
+    <label>Tono de notificación:
+      <select>
+        <option>Predeterminado</option>
+        <option>Suave</option>
+        <option>Silencio</option>
+      </select>
+    </label>
+    <label>
+      🌙 Modo oscuro:
+      <input type="checkbox" id="darkmode">
+    </label>
+    <button class="btn" onclick="goToApp()">Guardar y continuar con Zen</button>
+  </div>
+
+  <!-- Pantalla principal -->
+  <div id="app" class="hidden fade">
+    <div id="home" class="screen">
+      <h2>🏠 Inicio</h2>
+      <p>Bienvenido a tu espacio Zen.</p>
+    </div>
+    <div id="progress" class="hidden screen">
+      <h2>📊 Progreso</h2>
+      <p>Estadísticas diarias y semanales aparecerán aquí.</p>
+    </div>
+    <div id="zentime" class="hidden screen">
+      <h2>🧘 ZenTime</h2>
+      <p>Activa el modo Zen y relájate.</p>
+    </div>
+    <div id="challenges" class="hidden screen">
+      <h2>🎯 Retos</h2>
+      <p>Completa pequeños desafíos para mejorar tu hábito digital.</p>
+    </div>
+    <div id="profile" class="hidden screen">
+      <h2>👤 Perfil</h2>
+      <p>Configura tus límites, preferencias y logros aquí.</p>
+    </div>
+
+    <!-- Barra de navegación inferior -->
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('home', this)">Inicio</div>
+      <div class="tab" onclick="showTab('progress', this)">Progreso</div>
+      <div class="tab" onclick="showTab('zentime', this)">ZenTime</div>
+      <div class="tab" onclick="showTab('challenges', this)">Retos</div>
+      <div class="tab" onclick="showTab('profile', this)">Perfil</div>
+    </div>
+  </div>
+
+  <script>
+    function goToConfig() {
+      document.getElementById('welcome').classList.add('hidden');
+      document.getElementById('config').classList.remove('hidden');
     }
 
-    // Gráfico de ejemplo
-    const ctx = document.getElementById('usageChart');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],
-        datasets: [{
-          label: 'Uso (min)',
-          data: [30, 45, 60, 50, 40, 35, 20],
-          backgroundColor: '#4CAF50'
-        }]
+    function goToApp() {
+      document.getElementById('config').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+    }
+
+    function showTab(tabId, element) {
+      document.querySelectorAll('.screen').forEach(div => div.classList.add('hidden'));
+      document.getElementById(tabId).classList.remove('hidden');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      element.classList.add('active');
+    }
+
+    // Toggle modo oscuro
+    document.getElementById('darkmode').addEventListener('change', function() {
+      if (this.checked) {
+        document.body.classList.add('dark');
+      } else {
+        document.body.classList.remove('dark');
       }
     });
   </script>
