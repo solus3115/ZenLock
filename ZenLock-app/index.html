@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZenLock</title>
+
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Íconos Font Awesome desde local -->
+  <link rel="stylesheet" href="libs/all.min.css">
+</head>
+<body>
+  <!-- Pantalla de bienvenida -->
+  <div id="welcome-screen" class="screen active">
+    <img src="img/logo.png" alt="Logo ZenLock" class="logo">
+    <h1>Bienvenido a ZenLock 🐶</h1>
+    <button onclick="goToConfig()">Configurar</button>
+  </div>
+
+  <!-- Configuración inicial -->
+  <div id="config-screen" class="screen">
+    <h2>Configuración inicial</h2>
+    <label>Tiempo máximo diario (minutos):</label>
+    <input type="number" id="daily-limit" placeholder="Ej: 120">
+    <button onclick="saveConfig()">Guardar y continuar</button>
+  </div>
+
+  <!-- Pantalla principal -->
+  <div id="main-screen" class="screen">
+    <div id="home-tab" class="tab active">
+      <h2>Pantalla Principal 🏠</h2>
+      <p>Aquí verás tu estado actual de ZenLock.</p>
+      <canvas id="usageChart"></canvas>
+    </div>
+
+    <div id="progress-tab" class="tab">
+      <h2>Progreso 📊</h2>
+      <p>Estadísticas diarias/semanales del uso de apps.</p>
+    </div>
+
+    <div id="zentime-tab" class="tab">
+      <h2>ZenTime 🧘</h2>
+      <p>Modo zen activado para relajarte y concentrarte.</p>
+    </div>
+
+    <div id="challenges-tab" class="tab">
+      <h2>Retos 🎯</h2>
+      <p>Cumple minidesafíos diarios y gana recompensas.</p>
+    </div>
+
+    <div id="profile-tab" class="tab">
+      <h2>Perfil 👤</h2>
+      <p>Ajustes, preferencias y logros.</p>
+      <button onclick="toggleDarkMode()">Modo oscuro ON/OFF</button>
+    </div>
+
+    <!-- Barra de navegación inferior -->
+    <nav class="bottom-nav">
+      <button onclick="showTab('home')"><i class="fa fa-home"></i><br>Inicio</button>
+      <button onclick="showTab('progress')"><i class="fa fa-chart-bar"></i><br>Progreso</button>
+      <button onclick="showTab('zentime')"><i class="fa fa-spa"></i><br>ZenTime</button>
+      <button onclick="showTab('challenges')"><i class="fa fa-bullseye"></i><br>Retos</button>
+      <button onclick="showTab('profile')"><i class="fa fa-user"></i><br>Perfil</button>
+    </nav>
+  </div>
+
+  <!-- Librerías y scripts -->
+  <script src="libs/chart.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
