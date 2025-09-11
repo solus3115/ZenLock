@@ -4,259 +4,69 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZenLock</title>
-  <style>
-    /* ====== ESTILOS GENERALES ====== */
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fdf6e3;
-      color: #3a2e2e;
-      transition: background 0.3s, color 0.3s;
-    }
-    h1, h2, h3 {
-      margin: 10px 0;
-    }
-    .hidden {
-      display: none;
-    }
-    .container {
-      padding: 20px;
-      text-align: center;
-    }
 
-    /* ====== BOTONES ====== */
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 25px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button:hover {
-      background: #1e40af;
-    }
-
-    /* ====== BARRA INFERIOR ====== */
-    .navbar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      background: #fff8dc;
-      border-top: 1px solid #ccc;
-      padding: 10px 0;
-    }
-    .navbar button {
-      background: none;
-      border: none;
-      font-size: 14px;
-      color: #3a2e2e;
-      cursor: pointer;
-    }
-
-    /* ====== IMÁGENES DE ZEN ====== */
-    .zen-img {
-      max-width: 200px;
-      margin: 20px auto;
-      display: block;
-    }
-
-    /* ====== MODO OSCURO ====== */
-    .dark-mode {
-      background: #1e1e1e;
-      color: #f1f1f1;
-    }
-    .dark-mode .navbar {
-      background: #2c2c2c;
-      border-color: #555;
-    }
-
-    /* ====== BARRAS DE RETOS ====== */
-    .progress-bar {
-      width: 80%;
-      height: 12px;
-      border-radius: 6px;
-      background: #ddd;
-      margin: 10px auto;
-      overflow: hidden;
-    }
-    .progress {
-      height: 100%;
-      width: 40%;
-      background: #2563eb;
-    }
-
-    /* ====== SWITCH ON/OFF ====== */
-    .switch {
-      position: relative;
-      display: inline-block;
-      width: 50px;
-      height: 24px;
-    }
-    .switch input { display: none; }
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0; left: 0;
-      right: 0; bottom: 0;
-      background-color: #ccc;
-      border-radius: 24px;
-      transition: .4s;
-    }
-    .slider:before {
-      position: absolute;
-      content: "";
-      height: 18px; width: 18px;
-      left: 3px; bottom: 3px;
-      background: white;
-      border-radius: 50%;
-      transition: .4s;
-    }
-    input:checked + .slider {
-      background: #2563eb;
-    }
-    input:checked + .slider:before {
-      transform: translateX(26px);
-    }
-  </style>
+  <!-- Estilos principales -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Íconos Font Awesome desde local -->
+  <link rel="stylesheet" href="libs/all.min.css">
 </head>
 <body>
-
-  <!-- ====== BIENVENIDA ====== -->
-  <section id="welcome" class="container">
-    <img src="https://i.ibb.co/3fZC7gY/zen-meditando.png" alt="Zen meditando" class="zen-img">
-    <h1>¡Hola! Soy Zen 🐶</h1>
-    <p>Tu guardián digital. Te ayudaré a usar menos el cel y cuidar tu enfoque.</p>
-    <button onclick="goTo('config')">Empezar con ZenLock</button>
-  </section>
-
-  <!-- ====== CONFIGURACIÓN ====== -->
-  <section id="config" class="container hidden">
-    <img src="https://i.ibb.co/CKmM2gB/zen-explicando.png" alt="Zen explicando" class="zen-img">
-    <h2>Configura tu enfoque</h2>
-    <p>Elige cómo quieres usar tu tiempo.</p>
-
-    <h3>¿Cuánto tiempo al día?</h3>
-    <button>1h</button> <button>2h</button> <button>4h</button>
-    <button>6h</button> <button>8h</button>
-
-    <h3>¿Qué sonido prefieres?</h3>
-    <label><input type="radio" name="sound"> Ola Zen</label>
-    <label><input type="radio" name="sound"> Campanita</label>
-    <label><input type="radio" name="sound"> Gong</label>
-
-    <br><br>
-    <button onclick="goTo('home')">Guardar y continuar con Zen</button>
-  </section>
-
-  <!-- ====== PANTALLA PRINCIPAL ====== -->
-  <section id="home" class="container hidden">
-    <img src="https://i.ibb.co/QCkBLsH/zen-corriendo.png" alt="Zen corriendo" class="zen-img">
-    <h2>Te quedan 2h 15min hoy</h2>
-    <p>Tiempo usado del límite</p>
-    <div style="width:100px;height:100px;border:8px solid #2563eb;border-radius:50%;margin:20px auto;"></div>
-    <p><b>Tiempo Zen activado:</b> Solo apps esenciales</p>
-  </section>
-
-  <!-- ====== PROGRESO ====== -->
-  <section id="progress" class="container hidden">
-    <h2>📊 Progreso</h2>
-    <p>Estadísticas diarias y semanales</p>
-    <canvas id="usageChart" width="300" height="200"></canvas>
-  </section>
-
-  <!-- ====== ZENTIME ====== -->
-  <section id="zentime" class="container hidden">
-    <img src="https://i.ibb.co/3fZC7gY/zen-meditando.png" alt="Zen meditando" class="zen-img">
-    <h2>ZenTime 🧘</h2>
-    <p>Sesiones de concentración sin distracciones.</p>
-    <p>Sesiones completadas: <span id="sessionCount">0</span></p>
-    <button onclick="startZen()">Iniciar sesión</button>
-  </section>
-
-  <!-- ====== RETOS ====== -->
-  <section id="retos" class="container hidden">
-    <img src="https://i.ibb.co/D8RgGsW/zen-karate.png" alt="Zen karate" class="zen-img">
-    <h2>🎯 Retos</h2>
-    <h3>Diarios</h3>
-    <label><input type="checkbox"> Sin redes sociales 1h</label><br>
-    <label><input type="checkbox"> Cena sin celular</label>
-    <h3>Semanales</h3>
-    <p>Usa el cel menos de 3h por 5 días</p>
-    <div class="progress-bar"><div class="progress"></div></div>
-    <p>Activa ZenTime 1 vez al día por 1 semana</p>
-    <div class="progress-bar"><div class="progress" style="width:20%"></div></div>
-  </section>
-
-  <!-- ====== PERFIL ====== -->
-  <section id="perfil" class="container hidden">
-    <h2>👤 Perfil</h2>
-    <p>Configura tus preferencias</p>
-    <label>Modo oscuro 
-      <label class="switch">
-        <input type="checkbox" id="darkToggle" onchange="toggleDarkMode()">
-        <span class="slider"></span>
-      </label>
-    </label>
-  </section>
-
-  <!-- ====== BARRA INFERIOR ====== -->
-  <div class="navbar hidden" id="navbar">
-    <button onclick="goTo('home')">Inicio</button>
-    <button onclick="goTo('progress')">Progreso</button>
-    <button onclick="goTo('zentime')">ZenTime</button>
-    <button onclick="goTo('retos')">Retos</button>
-    <button onclick="goTo('perfil')">Perfil</button>
+  <!-- Pantalla de bienvenida -->
+  <div id="welcome-screen" class="screen active">
+    <img src="img/logo.png" alt="Logo ZenLock" class="logo">
+    <h1>Bienvenido a ZenLock 🐶</h1>
+    <button onclick="goToConfig()">Configurar</button>
   </div>
 
-  <!-- ====== SCRIPTS ====== -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    // Cambiar secciones
-    function goTo(section) {
-      document.querySelectorAll("section").forEach(s => s.classList.add("hidden"));
-      document.getElementById(section).classList.remove("hidden");
+  <!-- Configuración inicial -->
+  <div id="config-screen" class="screen">
+    <h2>Configuración inicial</h2>
+    <label>Tiempo máximo diario (minutos):</label>
+    <input type="number" id="daily-limit" placeholder="Ej: 120">
+    <button onclick="saveConfig()">Guardar y continuar</button>
+  </div>
 
-      // Mostrar navbar excepto en bienvenida y config
-      if (section === "welcome" || section === "config") {
-        document.getElementById("navbar").classList.add("hidden");
-      } else {
-        document.getElementById("navbar").classList.remove("hidden");
-      }
-    }
+  <!-- Pantalla principal -->
+  <div id="main-screen" class="screen">
+    <div id="home-tab" class="tab active">
+      <h2>Pantalla Principal 🏠</h2>
+      <p>Aquí verás tu estado actual de ZenLock.</p>
+      <canvas id="usageChart"></canvas>
+    </div>
 
-    // ZenTime contador
-    let sessions = 0;
-    function startZen() {
-      sessions++;
-      document.getElementById("sessionCount").textContent = sessions;
-      alert("Sesión Zen iniciada 🧘");
-    }
+    <div id="progress-tab" class="tab">
+      <h2>Progreso 📊</h2>
+      <p>Estadísticas diarias/semanales del uso de apps.</p>
+    </div>
 
-    // Modo oscuro
-    function toggleDarkMode() {
-      document.body.classList.toggle("dark-mode");
-    }
+    <div id="zentime-tab" class="tab">
+      <h2>ZenTime 🧘</h2>
+      <p>Modo zen activado para relajarte y concentrarte.</p>
+    </div>
 
-    // Gráfica
-    const ctx = document.getElementById('usageChart');
-    if (ctx) {
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ["Lun","Mar","Mié","Jue","Vie","Sáb","Dom"],
-          datasets: [{
-            label: "Horas usadas",
-            data: [3,4,2,5,3,6,4],
-            backgroundColor: "#2563eb"
-          }]
-        }
-      });
-    }
-  </script>
+    <div id="challenges-tab" class="tab">
+      <h2>Retos 🎯</h2>
+      <p>Cumple minidesafíos diarios y gana recompensas.</p>
+    </div>
+
+    <div id="profile-tab" class="tab">
+      <h2>Perfil 👤</h2>
+      <p>Ajustes, preferencias y logros.</p>
+      <button onclick="toggleDarkMode()">Modo oscuro ON/OFF</button>
+    </div>
+
+    <!-- Barra de navegación inferior -->
+    <nav class="bottom-nav">
+      <button onclick="showTab('home')"><i class="fa fa-home"></i><br>Inicio</button>
+      <button onclick="showTab('progress')"><i class="fa fa-chart-bar"></i><br>Progreso</button>
+      <button onclick="showTab('zentime')"><i class="fa fa-spa"></i><br>ZenTime</button>
+      <button onclick="showTab('challenges')"><i class="fa fa-bullseye"></i><br>Retos</button>
+      <button onclick="showTab('profile')"><i class="fa fa-user"></i><br>Perfil</button>
+    </nav>
+  </div>
+
+  <!-- Librerías y scripts -->
+  <script src="libs/chart.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
